@@ -1,5 +1,3 @@
-pull_hn_file = read_file('github.com/galenmarchetti/analytics-tooling/app/pull-hn-data.py')
-
 def run(plan):
 	requirement_artifact = plan.upload_files(
 		src='github.com/galenmarchetti/analytics-tooling/app',
@@ -36,5 +34,5 @@ def run(plan):
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["python", "/app/streamlit_from_csv.py"])
+			["streamlit", "run", "/app/streamlit_from_csv.py"])
 	)
