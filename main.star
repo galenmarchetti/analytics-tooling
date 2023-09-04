@@ -1,6 +1,6 @@
 def run(plan):
 	requirement_artifact = plan.upload_files(
-		src='./requirements.txt',
+		src='github.com/galenmarchetti/analytics-tooling/requirements.txt',
 	)
 
 	plan.add_service(
