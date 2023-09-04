@@ -11,7 +11,7 @@ def run(plan):
 				"/app": requirement_artifact, 
 			},
 			ports = {
-				"streamlit": PortSpec(
+				"hn-analytics-frontend": PortSpec(
 					8501,
 					wait = None
 				)
@@ -22,19 +22,19 @@ def run(plan):
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["apt-get", "update", "-y"])
+			["apt-get", "update", "-y", "2>&1"])
 	)
 
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["apt-get", "install", "screen", "-y"])
+			["apt-get", "install", "screen", "-y", "2>&1"])
 	)
 
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["pip", "install", "-r", "/app/requirements.txt"])
+			["pip", "install", "-r", "/app/requirements.txt", "2>&1"])
 	)
 
 	plan.exec(
