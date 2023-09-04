@@ -37,6 +37,7 @@ def run(plan):
 			["pip", "install", "-q", "-r", "/app/requirements.txt"])
 	)
 
+	plan.print("Pulling new stories and comments from HN API. This takes a while, estimated 5 minutes.")
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(

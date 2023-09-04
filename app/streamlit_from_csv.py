@@ -24,16 +24,6 @@ story_df['time_since_post'] = story_df['story_datetime'].apply(
     lambda dt: st.session_state['datetime_now'] - dt
 )
 
-
-#st.dataframe(story_df_with_selections)
-
-max_time_slider_value = time.max
-### Slider for user to filter by story publish date
-story_recency_time_filter = st.slider("Only show stories published within the last: ",
-                value=time.max,
-                format="H[h]m[m]"
-)
-
 ### Slider for user to filter for calculating recent comment velocity
 comment_velocity_recency_filter = st.slider("Calculate comment velocity based on comments published within the last: ",
                 min_value=time(0,15),
@@ -84,15 +74,6 @@ story_df_with_comment_metrics['comments_per_min'] = (
     story_df_with_comment_metrics['num_recent_comments'] * 1.0 /
     story_df_with_comment_metrics['minutes_since_earliest_recent_comment']
 )
-
-
-story_recency_timedelta = timedelta(
-    minutes=story_recency_time_filter.hour * 60 + story_recency_time_filter.minute
-)
-
-story_df_with_comment_metrics = story_df_with_comment_metrics[
-    story_df_with_comment_metrics['time_since_post'] < story_recency_timedelta  
-]
 
 story_df_with_selections = story_df_with_comment_metrics.copy()
 story_df_with_selections.insert(0, "Select", False)

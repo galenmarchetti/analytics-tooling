@@ -1,6 +1,7 @@
 import requests as r
+from requests.adapters import HTTPAdapter, Retry
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 
@@ -9,6 +10,8 @@ import pandas as pd
 '''
 All HN API requests are constructed using the following reference: https://github.com/HackerNews/API
 '''
+
+MAX_TIMEDELTA_TO_PULL_IN_HOURS = 6
 
 base_url = "https://hacker-news.firebaseio.com/v0/"
 human_display_item_url = "https://news.ycombinator.com/item?id="
@@ -57,6 +60,11 @@ def get_item_timestamps_for_all_kids(item_json, delay_in_seconds):
         kid_json = kid_response.json()
         if not kid_json:
             continue
+        if 'time' not in kid_json:
+            continue
+        kid_timestamp = datetime.fromtimestamp(kid_json['time'])
+        if (datetime.now() - kid_timestamp) > timedelta(hours=MAX_TIMEDELTA_TO_PULL_IN_HOURS):
+            continue
         kid_timestamps.append(kid_json['time'])
         kid_timestamps = kid_timestamps + get_item_timestamps_for_all_kids(kid_json, delay_in_seconds)
         time.sleep(delay_in_seconds)
@@ -88,6 +96,8 @@ for i, story_id in enumerate(new_stories_json):
     story_datetime = datetime.fromtimestamp(story_unix_time)
     
     timedelta_since_post = get_td_from_story(story)
+    if timedelta_since_post > timedelta(hours=MAX_TIMEDELTA_TO_PULL_IN_HOURS):
+        continue
     comments_per_minute = get_comments_per_minute_from_story(timedelta_since_post, num_comments)
     time_since_post = format_timedelta(timedelta_since_post)
     if num_comments > 0:
