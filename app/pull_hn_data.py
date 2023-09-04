@@ -71,6 +71,8 @@ num_stories = len(new_stories_json)
 story_records = []
 comment_timeseries_records = []
 for i, story_id in enumerate(new_stories_json):
+    if not (i > 200 and i < 250):
+        continue
     story_response = r.get(base_url + item_slug + str(story_id) + json_append_slug)
     story = story_response.json()
     if not story:
