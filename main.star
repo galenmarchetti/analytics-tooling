@@ -33,6 +33,15 @@ def run(plan):
 
 	plan.exec(
 		hn_data_puller.name,
-		recipe=ExecRecipe(
-			["streamlit", "run", "/app/streamlit_from_csv.py"])
+		recipe=ExecRecipe([
+			"nohup",
+			"streamlit",
+			"run",
+			"--server.headless",
+			"true",
+			"app/streamlit_from_csv.py",
+			">",
+			"streamlit_logs.log",
+			"2>&1",
+			"&"])
 	)
