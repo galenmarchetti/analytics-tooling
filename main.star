@@ -3,7 +3,7 @@ def run(plan):
 		src='github.com/galenmarchetti/analytics-tooling/app',
 	)
 
-	plan.add_service(
+	hn_data_puller = plan.add_service(
 		"hn-data-puller",
 		config=ServiceConfig(
 			"python:3.11.5-bullseye",
@@ -13,8 +13,8 @@ def run(plan):
 		),
 	)
 
-	#plan.exec("hn-data-puller",
-	#	recipe=ExecRecipe([
-	#		"pip install " + requirement_artifact.
-	#	])
-	#)
+	plan.exec("hn-data-puller",
+		recipe=ExecRecipe([
+			"pip install -r /app/requirements.txt"
+		])
+	)
