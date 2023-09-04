@@ -1,6 +1,6 @@
 def run(plan):
 	requirement_artifact = plan.upload_files(
-		src='github.com/galenmarchetti/hackernews-tooling/requirements.txt',
+		src='./requirements.txt',
 	)
 
 	plan.add_service(
