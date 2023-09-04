@@ -1,0 +1,5 @@
+altair==5.1.1
+pandas==2.1.0
+pytz==2023.3
+Requests==2.31.0
+streamlit==1.26.0
