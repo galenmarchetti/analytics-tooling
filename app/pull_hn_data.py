@@ -51,7 +51,6 @@ def get_item_timestamps_for_all_kids(item_json, delay_in_seconds):
     if 'kids' not in item_json:
         return []
     kids = item_json['kids']
-    print("Pulling timestamp info of kids for item with " + str(len(kids)) + " kids")
     kid_timestamps = []
     for kid_id in kids:
         kid_response = r.get(base_url + item_slug + str(kid_id) + json_append_slug)
@@ -71,7 +70,7 @@ num_stories = len(new_stories_json)
 story_records = []
 comment_timeseries_records = []
 for i, story_id in enumerate(new_stories_json):
-    if not (i > 200 and i < 250):
+    if not (i > 200 and i < 205):
         continue
     story_response = r.get(base_url + item_slug + str(story_id) + json_append_slug)
     story = story_response.json()

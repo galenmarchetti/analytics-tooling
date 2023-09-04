@@ -47,6 +47,8 @@ def run(plan):
 		hn_data_puller.name,
 		recipe=ExecRecipe([
 			"screen",
+			"-m",
+			"-d",
 			"streamlit",
 			"run",
 			"--server.headless",
