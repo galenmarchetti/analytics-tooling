@@ -4,7 +4,7 @@ def run(plan):
 	)
 
 	hn_data_puller = plan.add_service(
-		"hn-data-puller",
+		"hn-analytics",
 		config=ServiceConfig(
 			"python:3.11.5-bookworm",
 			files={
@@ -22,19 +22,19 @@ def run(plan):
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["apt-get", "update", "-y", "2>&1"])
+			["apt-get", "update", "-qq", "-y"])
 	)
 
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["apt-get", "install", "screen", "-y", "2>&1"])
+			["apt-get", "install", "-qq", "-y", "screen"])
 	)
 
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe(
-			["pip", "install", "-r", "/app/requirements.txt", "2>&1"])
+			["pip", "install", "-q", "-r", "/app/requirements.txt"])
 	)
 
 	plan.exec(
