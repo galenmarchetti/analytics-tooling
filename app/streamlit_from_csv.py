@@ -94,7 +94,7 @@ story_df_with_selections = story_df_with_selections[[
     'url'
 ]]
 
-st.markdown("*Click on a column to sort by that column. Click the 'Select' box to chart story engagement over time below.*")
+st.markdown("*Click on a column to sort by that column. Click the 'Select' box to chart story engagement over time below (scroll down).*")
 
 # Get dataframe row-selections from user with st.data_editor
 edited_df = st.data_editor(
@@ -138,6 +138,7 @@ else:
                 alt.Color('story_title:N').title("Title")
         ))
 
+    st.markdown("**Total comments per story over time**")
     st.altair_chart(cumulative_chart, use_container_width=True)
 
     comment_velocity_chart = (alt.Chart(filtered_comment_df)
@@ -154,4 +155,5 @@ else:
                 alt.Color('story_title:N').title("Title")
         ))
 
+    st.markdown("**Comments per minute per story over time**")
     st.altair_chart(comment_velocity_chart, use_container_width=True)
