@@ -12,6 +12,7 @@ All HN API requests are constructed using the following reference: https://githu
 '''
 
 MAX_TIMEDELTA_TO_PULL_IN_HOURS = 3
+DELAY_IN_SECONDS=0.03
 
 base_url = "https://hacker-news.firebaseio.com/v0/"
 human_display_item_url = "https://news.ycombinator.com/item?id="
@@ -47,7 +48,7 @@ def get_comment_timestamps(story_json, delay_in_seconds):
         comment_response = r.get(base_url + item_slug + str(comment_id) + json_append_slug)
         comment = comment_response.json()
         comment_timestamps.append(comment['time'])
-        time.sleep(delay_in_seconds)
+        time.sleep(DELAY_IN_SECONDS)
     return comment_timestamps
 
 def get_item_timestamps_for_all_kids(item_json, delay_in_seconds):
@@ -67,7 +68,7 @@ def get_item_timestamps_for_all_kids(item_json, delay_in_seconds):
             continue
         kid_timestamps.append(kid_json['time'])
         kid_timestamps = kid_timestamps + get_item_timestamps_for_all_kids(kid_json, delay_in_seconds)
-        time.sleep(delay_in_seconds)
+        time.sleep(DELAY_IN_SECONDS)
     return kid_timestamps
 
 ### Get Story IDs for the newest stories from the HN New Stories endpoint
