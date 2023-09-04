@@ -1,3 +1,3 @@
-# hackernews-tooling
+# analytics-tooling
 
-This is a Jupyter notebook repository.
+For analyzing!
