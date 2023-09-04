@@ -11,7 +11,7 @@ import pandas as pd
 All HN API requests are constructed using the following reference: https://github.com/HackerNews/API
 '''
 
-MAX_TIMEDELTA_TO_PULL_IN_HOURS = 6
+MAX_TIMEDELTA_TO_PULL_IN_HOURS = 3
 
 base_url = "https://hacker-news.firebaseio.com/v0/"
 human_display_item_url = "https://news.ycombinator.com/item?id="

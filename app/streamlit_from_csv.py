@@ -6,6 +6,13 @@ import pytz
 
 st.set_page_config(layout="wide")
 
+st.markdown("# HN Story Analytics: Trending and Controversial Stories")
+
+st.markdown("*This tool allows you to rank HN stories on 'comment velocity', a measure of comments per minute.*")
+st.markdown("*You can use this tool to find stories that are getting high engagement before they hit the front page.*")
+
+MAX_TIMEDELTA_TO_PULL_IN_HOURS = 3
+
 comment_timeseries_csv_filename = 'comment_timeseries_0.1.csv'
 stories_csv_filename = 'stories_0.1.csv'
 
@@ -28,7 +35,7 @@ story_df['time_since_post'] = story_df['story_datetime'].apply(
 comment_velocity_recency_filter = st.slider("Calculate comment velocity based on comments published within the last: ",
                 min_value=time(0,15),
                 value=time(1,30),
-                max_value=time(23,45),
+                max_value=time(MAX_TIMEDELTA_TO_PULL_IN_HOURS - 1,45),
                 format="H[h]m[m]",
                 step=timedelta(minutes=15)
 )
@@ -70,7 +77,7 @@ story_df_with_comment_metrics['minutes_since_earliest_recent_comment'] = (
     )
 )
 
-story_df_with_comment_metrics['comments_per_min'] = (
+story_df_with_comment_metrics['comment_velocity'] = (
     story_df_with_comment_metrics['num_recent_comments'] * 1.0 /
     story_df_with_comment_metrics['minutes_since_earliest_recent_comment']
 )
@@ -80,12 +87,14 @@ story_df_with_selections.insert(0, "Select", False)
 
 story_df_with_selections = story_df_with_selections[[
     'Select',
-    'comments_per_min',
+    'comment_velocity',
     'title',
     'num_comments',
     'time_since_post',
     'url'
 ]]
+
+st.markdown("*Click on a column to sort by that column. Click the 'Select' box to chart story engagement over time below.*")
 
 # Get dataframe row-selections from user with st.data_editor
 edited_df = st.data_editor(
@@ -133,14 +142,15 @@ else:
 
     comment_velocity_chart = (alt.Chart(filtered_comment_df)
             .transform_timeunit(
-                comment_timestamp='yearmonthdatehours(comment_timestamp)'
+                comment_timestamp='yearmonthdatehoursminutes(comment_timestamp)'
             )
-            .mark_line(
+            .mark_area(
+                opacity = 0.3,
                 interpolate='monotone'
             )
             .encode(
                 alt.X('comment_timestamp').title("Time"),
-                alt.Y('count(*):Q').title('Comments per hour'),
+                alt.Y('count(*):Q').title('Comments per minute'),
                 alt.Color('story_title:N').title("Title")
         ))
 
