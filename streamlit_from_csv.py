@@ -1,36 +1,83 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from datetime import time
+from datetime import time, datetime, timedelta
 
 st.set_page_config(layout="wide")
 
-story_df = pd.read_csv('recent_comment_velocity_df.csv')
-comment_df = pd.read_csv('comment_timeseries_df.csv')
+story_parse_dates = ['story_datetime']
+comment_parse_dates = ['comment_timestamp']
+story_df = pd.read_csv('recent_comment_velocity_df.csv', parse_dates=story_parse_dates)
+comment_df = pd.read_csv('comment_timeseries_df.csv', parse_dates=comment_parse_dates)
 
 story_df = story_df[
-    [ "comments_per_minute",
+    ["comments_per_minute",
      "recent_comments_per_minute",
-    "time_since_post", 
      "num_comments",
      "title", 
-     "url", ]]
+     "url",
+     "story_datetime"]]
+
+#st.write("Story dataframe types: ", story_df.dtypes)
+
+if 'datetime_now' not in st.session_state:
+    st.session_state['datetime_now'] = datetime.now()
+
+story_df['time_since_post'] = story_df['story_datetime'].apply(
+    lambda dt: st.session_state['datetime_now'] - dt
+)
 
 story_df_with_selections = story_df.copy()
 story_df_with_selections.insert(0, "Select", False)
 
+
 #st.dataframe(story_df_with_selections)
 
 max_time_slider_value = time.max
-### Slider for user to filter for recency
-start_time = st.slider("Only show stories published within the last: ",
+### Slider for user to filter by story publish date
+story_recency_time_filter = st.slider("Only show stories published within the last: ",
                 value=time.max,
                 format="H[h]m[m]"
-            )
+)
+
+### Slider for user to filter for calculating recent comment velocity
+comment_velocity_recency_filter = st.slider("Calculate comment velocity based on comments published within the last: ",
+                value=time.max,
+                format="H[h]m[m]"
+)
+
+comment_recency_timedelta = timedelta(
+    minutes=comment_velocity_recency_filter.hour * 60 + comment_velocity_recency_filter.minute
+)
+
+comment_velocity_calculator = comment_df[
+    comment_df['comment_timestamp'] > \
+        st.session_state['datetime_now'] - comment_recency_timedelta
+]
+
+comment_velocity_per_story = comment_velocity_calculator.groupby(
+        ['story_id']
+    ).agg(
+        {
+            'comment_timestamp': ['min', 'count'],
+        }
+    )
+
+### TODO TODO TODO USE THE ABOVE AGGREGATIONS TO CALCULATE COMMENTS PER MINUTE
+### TODO TODO TODO JOIN TO STORY DISPLAY BY STORY ID
+
+story_recency_timedelta = timedelta(
+    minutes=story_recency_time_filter.hour * 60 + story_recency_time_filter.minute
+)
+
+story_df_with_selections = story_df_with_selections[
+    story_df_with_selections['time_since_post'] < story_recency_timedelta  
+]
 
 # Get dataframe row-selections from user with st.data_editor
 edited_df = st.data_editor(
-        story_df_with_selections,
+        #story_df_with_selections,
+        story_df_with_selections.drop(['story_datetime'], axis=1),
         hide_index=True,
         column_config={"Select": st.column_config.CheckboxColumn(required=True)},
         disabled=story_df.columns,
@@ -65,9 +112,9 @@ else:
                 interpolate='monotone'
             )
             .encode(
-                x='comment_timestamp:T',
-                y='cumulative_count:Q',
-                color='story_title:N',
+                alt.X('comment_timestamp:T').title("Time"),
+                alt.Y('cumulative_count:Q').title("Total Comments"),
+                alt.Color('story_title:N').title("Title")
         ))
 
     st.altair_chart(cumulative_chart, use_container_width=True)
@@ -80,9 +127,9 @@ else:
                 interpolate='monotone'
             )
             .encode(
-                alt.X('comment_timestamp:T'),
+                alt.X('comment_timestamp:T').title("Time"),
                 alt.Y('count(*):Q').title('Comments per hour'),
-                color='story_title:N',
+                alt.Color('story_title:N').title("Title")
         ))
 
     st.altair_chart(comment_velocity_chart, use_container_width=True)
