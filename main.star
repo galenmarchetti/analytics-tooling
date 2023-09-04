@@ -8,7 +8,7 @@ def run(plan):
 		config=ServiceConfig(
 			"python:3.11.5-bullseye",
 		),
-		files={"/", requirement_artifact}
+		files={"/": requirement_artifact}
 	)
 
 	#plan.exec("hn-data-puller",
