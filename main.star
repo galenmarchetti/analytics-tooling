@@ -6,7 +6,7 @@ def run(plan):
 	hn_data_puller = plan.add_service(
 		"hn-data-puller",
 		config=ServiceConfig(
-			"python:3.11.5-bullseye",
+			"python:3.11.5-bookworm",
 			files={
 				"/app": requirement_artifact, 
 			},
@@ -17,6 +17,18 @@ def run(plan):
 				)
 			}
 		),
+	)
+	
+	plan.exec(
+		hn_data_puller.name,
+		recipe=ExecRecipe(
+			["apt-get", "update", "-y"])
+	)
+
+	plan.exec(
+		hn_data_puller.name,
+		recipe=ExecRecipe(
+			["apt-get", "install", "screen", "-y"])
 	)
 
 	plan.exec(
@@ -34,7 +46,7 @@ def run(plan):
 	plan.exec(
 		hn_data_puller.name,
 		recipe=ExecRecipe([
-			"nohup",
+			"screen",
 			"streamlit",
 			"run",
 			"--server.headless",
