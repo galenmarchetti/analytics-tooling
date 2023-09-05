@@ -13,6 +13,7 @@ def run(plan):
 			ports = {
 				"hn-analytics-frontend": PortSpec(
 					8501,
+					application_protocol="http",
 					wait = None
 				)
 			}
